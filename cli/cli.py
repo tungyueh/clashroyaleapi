@@ -68,6 +68,26 @@ class ClashRoyaleCLI(cmd.Cmd):
         for c in chests:
             print(f'{c.index+1}: {c.name}')
 
+    def do_get_player_battle_log(self, _):
+        """Get list of recent battle results for a player."""
+        battle_logs = self.cr_client.get_player_battle_log()
+
+        print('{:<20} {:<25} {:<25} {:<15} {:>3}'.format(
+            'Battle Time',
+            'Battel Type',
+            'Game Mode',
+            'Battle Result',
+            'Trophies'
+        ))
+        for battle_log in battle_logs:
+            if battle_log.win:
+                battle_result = 'win'
+            else:
+                battle_result = 'lose'
+            print(f'{battle_log.battle_time} {battle_log.type:<25} '
+                  f'{battle_log.game_mode:<25} {battle_result:<15} '
+                  f'{battle_log.team_profile[0].trophy_change:>3}')
+
     def do_list_card(self, _):
         """Get list of all available cards."""
         cards: List[Card] = self.cr_client.list_card()

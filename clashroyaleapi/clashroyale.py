@@ -58,6 +58,38 @@ class Chest:
         self.name: str = self._raw['name']
 
 
+class BattleProfile:
+    def __init__(self, mapping):
+        self._raw: JsonDict = mapping
+        self.tag: str = self._raw['tag']
+        self.name: str = self._raw['name']
+        self.crowns: int = self._raw['crowns']
+        self.clan: JsonDict = self._raw['clan']
+        self.cards: List[Card] = self._raw['cards']
+
+        self.starting_trophies: int = self._raw.get('startingTrophies')
+        self.trophy_change: int = self._raw.get('trophyChange', 0)
+
+
+class BattleLog:
+    def __init__(self, mapping):
+        self._raw: JsonDict = mapping
+        self.type: str = self._raw['type']
+        self.battle_time: str = self._raw['battleTime']
+        self.arena: str = self._raw['arena']['name']
+        self.game_mode: str = self._raw['gameMode']['name']
+        self.deck_selection: str = self._raw['deckSelection']
+        self.team_profile: List[BattleProfile] = self._raw['team']
+        self.opponent_profile: List[BattleProfile] = self._raw['opponent']
+        self.__post_init__()
+
+    def __post_init__(self):
+        if self.team_profile[0].crowns > self.opponent_profile[0].crowns:
+            self.win = True
+        else:
+            self.win = False
+
+
 class Card:
     def __init__(self, mapping):
         self._raw: JsonDict = mapping
@@ -94,6 +126,10 @@ class ClashRoyaleClient:
                 return Card(dct)
             elif 'index' in dct:
                 return Chest(dct)
+            elif 'battleTime' in dct:
+                return BattleLog(dct)
+            elif 'crowns' in dct:
+                return BattleProfile(dct)
             return dct
         self._json_hook = json_hook
 
@@ -117,9 +153,16 @@ class ClashRoyaleClient:
         resp.raise_for_status()
         return resp.json(object_hook=self._json_hook)['items']
 
+    def get_player_battle_log(self, player_tag: Optional[str]=None
+                              ) -> List[BattleLog]:
+        if player_tag is None:
+            player_tag = self.player_tag
 
-    def get_player_battle_log(self,):
-        pass
+        resp = requests.get(self.api_url + '/players/' + quote(player_tag) +
+                            '/battlelog',
+                            headers=self.auth)
+        resp.raise_for_status()
+        return resp.json(object_hook=self._json_hook)
 
     def list_card(self) -> List[Card]:
         resp = requests.get(self.api_url + '/cards', headers=self.auth)
