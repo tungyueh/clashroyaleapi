@@ -8,7 +8,7 @@ from typing import List
 
 import pprint
 
-from clashroyaleapi.clashroyale import ClashRoyaleClient, Card, Chest
+from clashroyaleapi import ClashRoyaleClient, Card, Chest
 
 
 def enable_mac_auto_complete():
