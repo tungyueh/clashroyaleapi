@@ -35,7 +35,7 @@ class ClashRoyaleCLI(cmd.Cmd):
         super().__init__()
 
     # pylint: disable=no-self-use
-    def do_EOF(self, _): # pylint: disable=invalid-name
+    def do_EOF(self, _):  # pylint: disable=invalid-name
         print('')
         return True
 
