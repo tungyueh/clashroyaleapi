@@ -5,12 +5,123 @@ from typing import Any, Dict, List, Optional
 JsonDict = Dict[str, Any]
 
 
+class ClanMember:
+    def __init__(self, mapping):
+        self._raw: JsonDict = mapping
+        self.tag: str = self._raw['tag']
+        self.name: str = self._raw['name']
+        self.king_tower_level: int = self._raw['expLevel']
+        self.trophies: int = self._raw['trophies']
+        self.arena: JsonDict = self._raw['arena']
+        self.clan_role: str = self._raw['role']
+        self.clan_rank: Optional[int] = self._raw['clanRank']
+        self.previous_clanRank: Optional[int] = self._raw['previousClanRank']
+        self.donations: int = self._raw['donations']
+        self.donations_received: int = self._raw['donationsReceived']
+        self.clan_chest_points: int = self._raw.get('clanChestPoints', 0)
+
+    def __repr__(self):
+        return f'ClanMember(clan_rank={self.clan_rank}, ' \
+               f'name={self.name}, ' \
+               f'trophies={self.trophies}, ' \
+               f'donations={self.donations}, ' \
+               f'donations_received={self.donations_received}, ' \
+               f'clan_chest_points={self.clan_chest_points})'
+
+
+class Clan:
+    def __init__(self, mapping):
+        self._raw: Dict[str, Any] = mapping
+        self.tag: str = self._raw['tag']
+        self.name: str = self._raw['name']
+        self.badge_id: int = self._raw['badgeId']
+        self.type: str = self._raw['type']
+        self.clan_score: int = self._raw['clanScore']
+        self.required_trophies: int = self._raw['requiredTrophies']
+        self.donations_per_week: int = self._raw['donationsPerWeek']
+        self.clan_chest_level: int = self._raw['clanChestLevel']
+        self.clan_chest_max_level: int = self._raw['clanChestMaxLevel']
+        self.members: int = self._raw['members']
+        self.location: JsonDict = self._raw['location']
+        self.description: str = self._raw['description']
+        self.clan_chest_status: str = self._raw['clanChestStatus']
+        self.clan_chest_points: int = self._raw['clanChestPoints']
+        self.memberList: List[ClanMember] = self._raw['memberList']
+
+
+class WarClan:
+    def __init__(self, mapping):
+        self._raw: Dict[str, Any] = mapping
+        self.badge_id: int = self._raw['badgeId']
+        self.battles_played: int = self._raw['battlesPlayed']
+        self.clan_score: int = self._raw['clanScore']
+        self.crowns: int = self._raw['crowns']
+        self.name: str = self._raw['name']
+        self.participants: int = self._raw['participants']
+        self.tag: str = self._raw['tag']
+        self.wins: int = self._raw['wins']
+
+    def __repr__(self):
+        return f'WarClan(' \
+               f'name={self.name}, ' \
+               f'battles_played={self.battles_played}, ' \
+               f'wins={self.wins},' \
+               f'crowns={self.crowns}, ' \
+               f'participants={self.participants})'
+
+
+class WarStanding:
+    def __init__(self, mapping):
+        self._raw: Dict[str, Any] = mapping
+        self.clan: WarClan = self._raw['clan']
+        self.trophy_change: int = self._raw.get('trophyChange', 0)
+
+    def __repr__(self):
+        return f'WarStanding(' \
+               f'clan={self.clan}, ' \
+               f'trophy_change={self.trophy_change})'
+
+
+class WarParticipant:
+    def __init__(self, mapping):
+        self._raw: Dict[str, Any] = mapping
+        self.tag: str = self._raw['tag']
+        self.name: str = self._raw['name']
+        self.cards_earned: int = self._raw['cardsEarned']
+        self.battles_played: int = self._raw['battlesPlayed']
+        self.wins: int = self._raw['wins']
+
+    def __repr__(self):
+        return f'WarParticipant(' \
+               f'name={self.name}, ' \
+               f'cards_earned={self.cards_earned}, ' \
+               f'battles_played={self.battles_played}, ' \
+               f'wins={self.wins})'
+
+
+class WarLog:
+    def __init__(self, mapping):
+        self._raw: Dict[str, Any] = mapping
+        self.season_id: int = self._raw['seasonId']
+        self.created_date: str = self._raw['createdDate']
+        self.participants: List[WarParticipant] = self._raw['participants']
+        self.standings: List[WarStanding] = self._raw['standings']
+
+
+class CurrentWar:
+    def __init__(self, mapping):
+        self._raw: Dict[str, Any] = mapping
+        self.war_end_time: str = self._raw['warEndTime']
+        self.clan: WarClan = self._raw['clan']
+        self.participants: List[WarParticipant] = self._raw['participants']
+
+
 class Player:
     def __init__(self, mapping):
         self._raw: Dict[str, Any] = mapping
         self.tag: str = self._raw['tag']
         self.name: str = self._raw['name']
-        self.king_tower_levle: int = self._raw['expLevel']
+        self.king_tower_level: int = self._raw['expLevel']
         self.trophies: int = self._raw['trophies']
         self.highest_trophies: int = self._raw['bestTrophies']
 
@@ -120,7 +231,21 @@ class ClashRoyaleClient:
         self.api_url = self.base_url + self.api_version
 
         def json_hook(dct: JsonDict):
-            if 'currentFavouriteCard' in dct:
+            if 'clanRank' in dct:
+                return ClanMember(dct)
+            elif 'requiredTrophies' in dct:
+                return Clan(dct)
+            elif 'battlesPlayed' in dct and 'participants' in dct:
+                return WarClan(dct)
+            elif 'clan' in dct and 'trophyChange' in dct:
+                return WarStanding(dct)
+            elif 'cardsEarned' in dct:
+                return WarParticipant(dct)
+            elif 'seasonId' in dct:
+                return WarLog(dct)
+            elif 'warEndTime' in dct:
+                return CurrentWar(dct)
+            elif 'currentFavouriteCard' in dct:
                 return Player(dct)
             elif 'maxLevel' in dct:
                 return Card(dct)
@@ -128,10 +253,50 @@ class ClashRoyaleClient:
                 return Chest(dct)
             elif 'battleTime' in dct:
                 return BattleLog(dct)
-            elif 'crowns' in dct:
+            elif 'crowns' in dct and 'cards' in dct:
                 return BattleProfile(dct)
             return dct
         self._json_hook = json_hook
+
+    def get_clan(self, clan_tag: Optional[str]=None) -> Clan:
+        if clan_tag is None:
+            clan_tag = self.clan_tag
+
+        resp = requests.get(self.api_url + '/clans/' + quote(clan_tag),
+                            headers=self.auth)
+        resp.raise_for_status()
+        return resp.json(object_hook=self._json_hook)
+
+    def list_clan_member(self, clan_tag: Optional[str]=None
+                         ) -> List[ClanMember]:
+        if clan_tag is None:
+            clan_tag = self.clan_tag
+
+        resp = requests.get(self.api_url + '/clans/' + quote(clan_tag) +
+                            '/members',
+                            headers=self.auth)
+        resp.raise_for_status()
+        return resp.json(object_hook=self._json_hook)['items']
+
+    def list_clan_war_log(self, clan_tag: Optional[str]=None) -> List[WarLog]:
+        if clan_tag is None:
+            clan_tag = self.clan_tag
+
+        resp = requests.get(self.api_url + '/clans/' + quote(clan_tag) +
+                            '/warlog',
+                            headers=self.auth)
+        resp.raise_for_status()
+        return resp.json(object_hook=self._json_hook)['items']
+
+    def get_clan_current_war(self, clan_tag: Optional[str]=None
+                             ) -> CurrentWar:
+        if clan_tag is None:
+            clan_tag = self.clan_tag
+        resp = requests.get(self.api_url + '/clans/' + quote(clan_tag) +
+                            '/currentwar',
+                            headers=self.auth)
+        resp.raise_for_status()
+        return resp.json(object_hook=self._json_hook)
 
     def get_player(self, player_tag: Optional[str]=None) -> Player:
         if player_tag is None:

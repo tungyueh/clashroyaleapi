@@ -6,7 +6,7 @@ import os
 import sys
 from typing import List
 
-import pprint
+from pprint import pprint
 
 from clashroyaleapi import ClashRoyaleClient, Card, Chest
 
@@ -54,11 +54,43 @@ class ClashRoyaleCLI(cmd.Cmd):
             readline.add_history(line)
         return line
 
+    def do_get_clan(self, _):
+        """Get information about a single clan by clan tag."""
+        clan = self.cr_client.get_clan()
+        pprint(clan._raw)
+
+    def do_list_clan_member(self, _):
+        """List clan members."""
+        clan_member = self.cr_client.list_clan_member()
+        for m in clan_member:
+            print(m)
+
+    def do_list_clan_war_log(self, _):
+        """Retrieve clan's clan war log"""
+        clan_war_log = self.cr_client.list_clan_war_log()
+        for war_log in clan_war_log:
+            print(f'Season={war_log.season_id} Date={war_log.created_date}')
+            print(f'Collection day: ')
+            for war_participant in war_log.participants:
+                print(f'  {war_participant}')
+            print(f'War day: ')
+            for war_standing in war_log.standings:
+                print(f'  {war_standing}')
+            print('')
+
+    def do_get_clan_current_war(self, _):
+        """Retrieve information about clan's current clan war"""
+        clan_current_war = self.cr_client.get_clan_current_war()
+        print(f'war end time: {clan_current_war.war_end_time}')
+        print(clan_current_war.clan)
+        for war_participant in clan_current_war.participants:
+            print(f'  {war_participant}')
+
     def do_get_player(self, _):
         """Get information about a single player by player tag."""
         player = self.cr_client.get_player()
         if self.verbose:
-            pprint.pprint(player._raw)
+            pprint(player._raw)
         else:
             print(player)
 
