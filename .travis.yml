@@ -7,3 +7,4 @@ install:
 script:
   - pycodestyle clashroyaleapi
   - pylint clashroyaleapi --rcfile=.pylintrc
+  - mypy clashroyaleapi

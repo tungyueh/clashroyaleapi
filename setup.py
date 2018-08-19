@@ -11,6 +11,6 @@ setup(
         'requests',
     ],
     extras_require={
-        'travis': ['pycodestyle', 'pylint']
+        'travis': ['pycodestyle', 'pylint', 'mypy'],
     }
 )

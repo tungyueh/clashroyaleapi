@@ -1,5 +1,6 @@
 # Clash Royale Command-Line Interface
 [![Build Status](https://api.travis-ci.com/tungyueh/clashroyaleapi.svg?branch=master)](https://travis-ci.com/tungyueh/clashroyaleapi)
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
 CLI using Clash Royale API
 
