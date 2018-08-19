@@ -8,10 +8,12 @@ from typing import List
 
 from pprint import pprint
 
-from clashroyaleapi import ClashRoyaleClient, Card, Chest
+from clashroyaleapi import (Card, Clan, ClanMember, WarClan, WarStanding,
+                            WarParticipant, WarLog, CurrentWar, Player, Chest,
+                            BattleLog, BattleProfile, ClashRoyaleClient)
 
 
-def enable_mac_auto_complete():
+def enable_mac_auto_complete() -> None:
     if 'libedit' in readline.__doc__:
         readline.parse_and_bind("bind ^I rl_complete")
     else:
@@ -61,13 +63,13 @@ class ClashRoyaleCLI(cmd.Cmd):
 
     def do_list_clan_member(self, _):
         """List clan members."""
-        clan_member = self.cr_client.list_clan_member()
+        clan_member: List[ClanMember] = self.cr_client.list_clan_member()
         for m in clan_member:
             print(m)
 
     def do_list_clan_war_log(self, _):
         """Retrieve clan's clan war log"""
-        clan_war_log = self.cr_client.list_clan_war_log()
+        clan_war_log: List[WarLog] = self.cr_client.list_clan_war_log()
         for war_log in clan_war_log:
             print(f'Season={war_log.season_id} Date={war_log.created_date}')
             print(f'Collection day: ')
@@ -80,7 +82,7 @@ class ClashRoyaleCLI(cmd.Cmd):
 
     def do_get_clan_current_war(self, _):
         """Retrieve information about clan's current clan war"""
-        clan_current_war = self.cr_client.get_clan_current_war()
+        clan_current_war: CurrentWar = self.cr_client.get_clan_current_war()
         print(f'war end time: {clan_current_war.war_end_time}')
         print(clan_current_war.clan)
         for war_participant in clan_current_war.participants:
@@ -88,7 +90,7 @@ class ClashRoyaleCLI(cmd.Cmd):
 
     def do_get_player(self, _):
         """Get information about a single player by player tag."""
-        player = self.cr_client.get_player()
+        player: Player = self.cr_client.get_player()
         if self.verbose:
             pprint(player._raw)
         else:
@@ -102,7 +104,7 @@ class ClashRoyaleCLI(cmd.Cmd):
 
     def do_get_player_battle_log(self, _):
         """Get list of recent battle results for a player."""
-        battle_logs = self.cr_client.get_player_battle_log()
+        battle_logs: List[BattleLog] = self.cr_client.get_player_battle_log()
 
         print('{:<20} {:<25} {:<25} {:<15} {:>3}'.format(
             'Battle Time',

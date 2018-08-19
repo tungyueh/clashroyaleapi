@@ -1,7 +1,7 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import requests
-from requests.utils import quote
+from requests.utils import quote  # type: ignore
 
 JsonDict = Dict[str, Any]
 
@@ -220,7 +220,7 @@ class Card:
 
 
 class ClashRoyaleClient:
-    def __init__(self, token: str, player_tag: str, clan_tag: str):
+    def __init__(self, token: str, player_tag: str, clan_tag: str) -> None:
         self.token = token
         self.player_tag = player_tag
         self.clan_tag = clan_tag
@@ -229,7 +229,9 @@ class ClashRoyaleClient:
         self.base_url = 'https://api.clashroyale.com/'
         self.api_url = self.base_url + self.api_version
 
-        def clan_json_hook(dct: JsonDict):
+        def clan_json_hook(dct: JsonDict) -> Union[ClanMember,
+                                                   Clan,
+                                                   JsonDict]:
             if 'clanRank' in dct:
                 return ClanMember(dct)
             elif 'requiredTrophies' in dct:
@@ -237,7 +239,12 @@ class ClashRoyaleClient:
             return dct
         self._clan_json_hook = clan_json_hook
 
-        def war_json_hook(dct: JsonDict):
+        def war_json_hook(dct: JsonDict) -> Union[WarClan,
+                                                  WarStanding,
+                                                  WarParticipant,
+                                                  WarLog,
+                                                  CurrentWar,
+                                                  JsonDict]:
             if 'battlesPlayed' in dct and 'participants' in dct:
                 return WarClan(dct)
             elif 'clan' in dct and 'trophyChange' in dct:
@@ -251,7 +258,12 @@ class ClashRoyaleClient:
             return dct
         self._war_json_hook = war_json_hook
 
-        def player_json_hook(dct: JsonDict):
+        def player_json_hook(dct: JsonDict) -> Union[Player,
+                                                     Card,
+                                                     Chest,
+                                                     BattleLog,
+                                                     BattleProfile,
+                                                     JsonDict]:
             if 'currentFavouriteCard' in dct:
                 return Player(dct)
             elif 'maxLevel' in dct:
