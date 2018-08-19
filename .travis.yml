@@ -1,0 +1,9 @@
+language: python
+python:
+  - "3.6"
+install:
+  - pip install -e .
+  - pip install -e .[travis]
+script:
+  - pycodestyle rarbgapi
+  - pylint rarbgapi --rcfile=pylintrc

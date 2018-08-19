@@ -9,5 +9,8 @@ setup(
     description='Command-line interface of Clash Royale API',
     install_requires=[
         'requests',
-    ]
+    ],
+    extras_require={
+        'travis': ['pycodestyle', 'pylint']
+    }
 )
