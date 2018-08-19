@@ -134,7 +134,7 @@ def main():
     parser.add_argument('-v', '--verbose', action='store_true',
                         default=False, help='Print vebose message')
     parser.add_argument('-a', '--auth_file', metavar='auth_file', type=str,
-                        default='', help='A path to auth_file.')
+                        required=True, help='A path to auth_file.')
     args = parser.parse_args()
     auth_file = args.auth_file
     with open(auth_file, 'rb') as fp:

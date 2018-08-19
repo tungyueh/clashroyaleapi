@@ -12,5 +12,10 @@ setup(
     ],
     extras_require={
         'travis': ['pycodestyle', 'pylint', 'mypy'],
-    }
+    },
+    entry_points={
+        'console_scripts': [
+            'cr-cli=clashroyaleapi.cli:main',
+        ]
+    },
 )
