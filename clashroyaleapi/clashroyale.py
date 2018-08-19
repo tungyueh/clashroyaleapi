@@ -112,9 +112,23 @@ class WarLog:
 class CurrentWar:
     def __init__(self, mapping):
         self._raw: Dict[str, Any] = mapping
-        self.war_end_time: str = self._raw['warEndTime']
+        if 'warEndTime' in self._raw:
+            self.end_time: str = self._raw['warEndTime']
+        elif 'collectionEndTime' in self._raw:
+            self.end_time: str = self._raw['collectionEndTime']
+        else:
+            assert False, 'No warEndTime or collectionEndTime'
         self.clan: WarClan = self._raw['clan']
         self.participants: List[WarParticipant] = self._raw['participants']
+        self.state: str = self._raw['state']
+        self.__post_init__()
+
+    def __post_init__(self):
+        self.war_day: bool = True if self.state == 'warDay' else False
+        if self.state == 'collectionDay':
+            self.collection_day: bool = True
+        else:
+            self.collection_day: bool = False
 
 
 class Player:
@@ -253,7 +267,7 @@ class ClashRoyaleClient:
                 return WarParticipant(dct)
             elif 'seasonId' in dct:
                 return WarLog(dct)
-            elif 'warEndTime' in dct:
+            elif 'warEndTime' in dct or 'collectionEndTime' in dct:
                 return CurrentWar(dct)
             return dct
         self._war_json_hook = war_json_hook

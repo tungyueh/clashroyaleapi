@@ -83,7 +83,11 @@ class ClashRoyaleCLI(cmd.Cmd):
     def do_get_clan_current_war(self, _):
         """Retrieve information about clan's current clan war"""
         clan_current_war: CurrentWar = self.cr_client.get_clan_current_war()
-        print(f'war end time: {clan_current_war.war_end_time}')
+        if clan_current_war.war_day:
+            print(f'War day end time: {clan_current_war.end_time}')
+        elif clan_current_war.collection_day:
+            print(f'Collection day end time: {clan_current_war.end_time}')
+
         print(clan_current_war.clan)
         for war_participant in clan_current_war.participants:
             print(f'  {war_participant}')
