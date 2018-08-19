@@ -6,4 +6,4 @@ install:
   - pip install -e .[travis]
 script:
   - pycodestyle rarbgapi
-  - pylint rarbgapi --rcfile=pylintrc
+  - pylint rarbgapi --rcfile=.pylintrc
