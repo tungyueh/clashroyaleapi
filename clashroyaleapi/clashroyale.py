@@ -1,6 +1,7 @@
+from typing import Any, Dict, List, Optional
+
 import requests
 from requests.utils import quote
-from typing import Any, Dict, List, Optional
 
 JsonDict = Dict[str, Any]
 
@@ -15,7 +16,7 @@ class ClanMember:
         self.arena: JsonDict = self._raw['arena']
         self.clan_role: str = self._raw['role']
         self.clan_rank: Optional[int] = self._raw['clanRank']
-        self.previous_clanRank: Optional[int] = self._raw['previousClanRank']
+        self.previous_clan_rank: Optional[int] = self._raw['previousClanRank']
         self.donations: int = self._raw['donations']
         self.donations_received: int = self._raw['donationsReceived']
         self.clan_chest_points: int = self._raw.get('clanChestPoints', 0)
@@ -46,7 +47,7 @@ class Clan:
         self.description: str = self._raw['description']
         self.clan_chest_status: str = self._raw['clanChestStatus']
         self.clan_chest_points: int = self._raw['clanChestPoints']
-        self.memberList: List[ClanMember] = self._raw['memberList']
+        self.member_list: List[ClanMember] = self._raw['memberList']
 
 
 class WarClan:
@@ -195,10 +196,8 @@ class BattleLog:
         self.__post_init__()
 
     def __post_init__(self):
-        if self.team_profile[0].crowns > self.opponent_profile[0].crowns:
-            self.win = True
-        else:
-            self.win = False
+        win = self.team_profile[0].crowns > self.opponent_profile[0].crowns
+        self.win = win
 
 
 class Card:
@@ -208,7 +207,7 @@ class Card:
         self.max_level: int = self._raw['maxLevel']
         self.icon_url: JsonDict = self._raw['iconUrls']
 
-        self.id: int = self._raw.get('id')
+        self.card_id: int = self._raw.get('id')
         self.level: int = self._raw.get('level')
         self.count: int = self._raw.get('count')
 
@@ -266,7 +265,7 @@ class ClashRoyaleClient:
             return dct
         self._player_json_hook = player_json_hook
 
-    def get_clan(self, clan_tag: Optional[str]=None) -> Clan:
+    def get_clan(self, clan_tag: Optional[str] = None) -> Clan:
         if clan_tag is None:
             clan_tag = self.clan_tag
 
@@ -275,7 +274,7 @@ class ClashRoyaleClient:
         resp.raise_for_status()
         return resp.json(object_hook=self._clan_json_hook)
 
-    def list_clan_member(self, clan_tag: Optional[str]=None
+    def list_clan_member(self, clan_tag: Optional[str] = None
                          ) -> List[ClanMember]:
         if clan_tag is None:
             clan_tag = self.clan_tag
@@ -286,7 +285,8 @@ class ClashRoyaleClient:
         resp.raise_for_status()
         return resp.json(object_hook=self._clan_json_hook)['items']
 
-    def list_clan_war_log(self, clan_tag: Optional[str]=None) -> List[WarLog]:
+    def list_clan_war_log(self, clan_tag: Optional[str] = None
+                          ) -> List[WarLog]:
         if clan_tag is None:
             clan_tag = self.clan_tag
 
@@ -296,7 +296,7 @@ class ClashRoyaleClient:
         resp.raise_for_status()
         return resp.json(object_hook=self._war_json_hook)['items']
 
-    def get_clan_current_war(self, clan_tag: Optional[str]=None
+    def get_clan_current_war(self, clan_tag: Optional[str] = None
                              ) -> CurrentWar:
         if clan_tag is None:
             clan_tag = self.clan_tag
@@ -306,7 +306,7 @@ class ClashRoyaleClient:
         resp.raise_for_status()
         return resp.json(object_hook=self._war_json_hook)
 
-    def get_player(self, player_tag: Optional[str]=None) -> Player:
+    def get_player(self, player_tag: Optional[str] = None) -> Player:
         if player_tag is None:
             player_tag = self.player_tag
 
@@ -315,7 +315,7 @@ class ClashRoyaleClient:
         resp.raise_for_status()
         return resp.json(object_hook=self._player_json_hook)
 
-    def get_player_upcoming_chest(self, player_tag: Optional[str]=None
+    def get_player_upcoming_chest(self, player_tag: Optional[str] = None
                                   ) -> List[Chest]:
         if player_tag is None:
             player_tag = self.player_tag
@@ -326,7 +326,7 @@ class ClashRoyaleClient:
         resp.raise_for_status()
         return resp.json(object_hook=self._player_json_hook)['items']
 
-    def get_player_battle_log(self, player_tag: Optional[str]=None
+    def get_player_battle_log(self, player_tag: Optional[str] = None
                               ) -> List[BattleLog]:
         if player_tag is None:
             player_tag = self.player_tag
@@ -341,5 +341,3 @@ class ClashRoyaleClient:
         resp = requests.get(self.api_url + '/cards', headers=self.auth)
         resp.raise_for_status()
         return resp.json(object_hook=self._player_json_hook)['items']
-
-
