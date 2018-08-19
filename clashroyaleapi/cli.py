@@ -8,9 +8,8 @@ from typing import List
 
 from pprint import pprint
 
-from clashroyaleapi import (Card, Clan, ClanMember, WarClan, WarStanding,
-                            WarParticipant, WarLog, CurrentWar, Player, Chest,
-                            BattleLog, BattleProfile, ClashRoyaleClient)
+from clashroyaleapi import (Card, Clan, ClanMember, WarLog, CurrentWar,
+                            Player, Chest, BattleLog, ClashRoyaleClient)
 
 
 def enable_mac_auto_complete() -> None:
@@ -25,7 +24,7 @@ class ClashRoyaleCLI(cmd.Cmd):
                  token: str,
                  player_tag: str,
                  clan_tag: str,
-                 verbose: bool = False):
+                 verbose: bool = False) -> None:
         self.cr_client = ClashRoyaleClient(token,
                                            player_tag,
                                            clan_tag)
@@ -35,7 +34,8 @@ class ClashRoyaleCLI(cmd.Cmd):
         self.prompt = 'ClashRoyale: '
         super().__init__()
 
-    def do_EOF(self, _):
+    # pylint: disable=no-self-use
+    def do_EOF(self, _): # pylint: disable=invalid-name
         print('')
         return True
 
@@ -58,14 +58,14 @@ class ClashRoyaleCLI(cmd.Cmd):
 
     def do_get_clan(self, _):
         """Get information about a single clan by clan tag."""
-        clan = self.cr_client.get_clan()
-        pprint(clan._raw)
+        clan: Clan = self.cr_client.get_clan()
+        pprint(clan._raw)  # pylint: disable=protected-access
 
     def do_list_clan_member(self, _):
         """List clan members."""
         clan_member: List[ClanMember] = self.cr_client.list_clan_member()
-        for m in clan_member:
-            print(m)
+        for member in clan_member:
+            print(member)
 
     def do_list_clan_war_log(self, _):
         """Retrieve clan's clan war log"""
@@ -92,15 +92,16 @@ class ClashRoyaleCLI(cmd.Cmd):
         """Get information about a single player by player tag."""
         player: Player = self.cr_client.get_player()
         if self.verbose:
-            pprint(player._raw)
+            pprint(player._raw)  # pylint: disable=protected-access
         else:
             print(player)
 
     def do_get_player_upcoming_chest(self, _):
-        """Get list of reward chests that the player will receive next in the game."""
+        """Get list of reward chests
+        that the player will receive next in the game."""
         chests: List[Chest] = self.cr_client.get_player_upcoming_chest()
-        for c in chests:
-            print(f'{c.index+1}: {c.name}')
+        for chest in chests:
+            print(f'{chest.index+1}: {chest.name}')
 
     def do_get_player_battle_log(self, _):
         """Get list of recent battle results for a player."""
@@ -137,7 +138,7 @@ def main():
                         required=True, help='A path to auth_file.')
     args = parser.parse_args()
     auth_file = args.auth_file
-    with open(auth_file, 'rb') as fp:
+    with open(auth_file, 'rb') as fp:  # pylint: disable=invalid-name
         auth = fp.read()
 
     auth_json = json.loads(auth)
