@@ -1,4 +1,6 @@
 # Clash Royale Command-Line Interface
+[![Build Status](https://api.travis-ci.com/tungyueh/clashroyaleapi.svg?branch=master)](https://travis-ci.com/tungyueh/clashroyaleapi)
+
 CLI using Clash Royale API
 
 ## Usage
