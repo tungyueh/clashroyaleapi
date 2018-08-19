@@ -138,7 +138,7 @@ class Player:
         self.tournament_cards_won: int = self._raw['tournamentCardsWon']
         self.tournament_battle_count: int = self._raw['tournamentBattleCount']
 
-        self.clan_role: str = self._raw['role']
+        self.clan_role: Optional[str] = self._raw.get('role')  # Maybe No Clan
 
         self.donations: int = self._raw['donations']
         self.donations_received: int = self._raw['donationsReceived']
@@ -147,7 +147,7 @@ class Player:
         self.war_day_wins: int = self._raw['warDayWins']
         self.clan_cards_collected: int = self._raw['clanCardsCollected']
 
-        self.clan: JsonDict = self._raw['clan']
+        self.clan: Optional[JsonDict] = self._raw.get('clan')  # Maybe No Clan
 
         self.league_statistics: JsonDict = self._raw['leagueStatistics']
 
@@ -175,9 +175,9 @@ class BattleProfile:
         self.tag: str = self._raw['tag']
         self.name: str = self._raw['name']
         self.crowns: int = self._raw['crowns']
-        self.clan: JsonDict = self._raw['clan']
         self.cards: List[Card] = self._raw['cards']
 
+        self.clan: Optional[JsonDict] = self._raw.get('clan')  # Maybe No Clan
         self.starting_trophies: int = self._raw.get('startingTrophies')
         self.trophy_change: int = self._raw.get('trophyChange', 0)
 
