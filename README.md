@@ -1,8 +1,8 @@
-# Clash Royale Command-Line Interface
+# Command-Line Interface using Official API of Clash Royale 
 [![Build Status](https://api.travis-ci.com/tungyueh/clashroyaleapi.svg?branch=master)](https://travis-ci.com/tungyueh/clashroyaleapi)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 
-CLI using Clash Royale API
+CLI using Clash Royale Official API
 
 ## How to use CLI
 1. Go to https://developer.clashroyale.com/#/ to create a key
